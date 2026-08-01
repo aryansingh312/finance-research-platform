@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+}
+
+:root {
+  --canvas: #f8f8f5;
+  --ink: #17211d;
+  --muted: #56635b;
+  --line: #d7d9d4;
+  --accent: #345b40;
+  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-sans: "Segoe UI Variable", Aptos, "Helvetica Neue", Arial, sans-serif;
+}
+
+.dark {
+  --canvas: #101411;
+  --ink: #edf3ee;
+  --muted: #bcc7be;
+  --line: #303932;
+  --accent: #a9cfad;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+html.dark { color-scheme: dark; }
+
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+}
+
+a { color: inherit; }
+
+.company-logo-image { opacity: 0.72; }
+
+.dark .company-logo-image {
+  filter: brightness(0) invert(1);
+}
+
+.font-display { font-family: var(--font-display); }
+
+::selection { background: color-mix(in srgb, var(--accent) 24%, transparent); }
