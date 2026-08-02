@@ -1,8 +1,10 @@
-export type ResearchStatus = "Final draft" | "Complete" | "In progress";
+import { aiInInvestingBlocks, aiInInvestingReadingTime, type ArticleBlock } from "@/data/ai-in-investing";
+
+export type ResearchStatus = "Final Draft" | "Complete" | "In progress";
 
 export type ResearchItem = {
   slug: string;
-  type: "Project" | "Research paper";
+  type: "Flagship Project" | "Project" | "Research paper";
   status: ResearchStatus;
   title: string;
   description: string;
@@ -15,6 +17,7 @@ export type ResearchItem = {
   author?: string;
   publicationDate?: string;
   pdfUrl?: string;
+  blocks?: ArticleBlock[];
   article?: {
     introduction: string[];
     sectionCopy: Record<string, string[]>;
@@ -37,18 +40,18 @@ export type ResearchItem = {
 export const researchItems: ResearchItem[] = [
   {
     slug: "ai-in-investing",
-    type: "Project",
-    status: "Final draft",
+    type: "Flagship Project",
+    status: "Final Draft",
     title: "AI in Investing",
-    description: "How artificial intelligence is changing investment research, decision-making, and the enduring importance of human judgment.",
+    description: "Which AI companies are actually worth owning over the next decade?",
     published: "2026",
-    readingTime: "20 min read",
-    subtitle: "A framework for using artificial intelligence as an analytical tool without confusing speed with insight.",
+    readingTime: aiInInvestingReadingTime,
     author: "Aryan Singh",
-    publicationDate: "June 2026",
-    thesis: "Artificial intelligence can extend an investor's analytical capacity, but it does not remove the need for independent judgment, sound incentives, or a long-term decision process.",
-    takeaways: ["AI accelerates information synthesis, not investment certainty.", "Data quality and an investor's underlying process determine the usefulness of AI outputs.", "The strongest advantage remains the ability to frame the right questions and exercise judgment."],
-    sections: ["The changing research workflow", "Where AI creates genuine leverage", "Limits, risks, and false precision", "The role of human judgment"],
+    publicationDate: "4th July 2026",
+    thesis: "Which AI companies are actually worth owning over the next decade?",
+    takeaways: [],
+    sections: [],
+    blocks: aiInInvestingBlocks,
     article: {
       introduction: [
         "Artificial intelligence is changing the mechanics of investment research. It can compress routine work, surface patterns across large information sets, and make a first pass at questions that once required hours of manual synthesis.",
@@ -101,7 +104,7 @@ export const researchItems: ResearchItem[] = [
   {
     slug: "competitive-moats-ai-era",
     type: "Project",
-    status: "Final draft",
+    status: "Final Draft",
     title: "Competitive Moats in the AI Era",
     description: "How artificial intelligence is reshaping the durability and sources of competitive advantage.",
     published: "2026",
