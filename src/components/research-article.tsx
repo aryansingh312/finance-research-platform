@@ -2,6 +2,8 @@ import { Fragment } from "react";
 import Link from "next/link";
 import type { ArticleBlock } from "@/data/ai-in-investing";
 import { AiInvestingVisual, essentialVisualSections } from "@/components/ai-investing-visuals";
+import { BehavioralBiasesVisual, behavioralBiasesVisualSections, type BehavioralBiasesVisualId } from "@/components/behavioral-biases-visuals";
+import { TableOfContents } from "@/components/table-of-contents";
 import type { ResearchItem } from "@/data/research";
 
 type ArticleNavigation = { slug: string; title: string } | undefined;
@@ -13,6 +15,21 @@ function sectionId(heading: string) {
 function DownloadIcon() {
   return <svg aria-hidden="true" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.7" viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v3h16v-3" /></svg>;
 }
+const behavioralBiasesTocLabels: Record<string, string> = {
+  "Abstract": "Abstract",
+  "Chapter 1 – Introduction": "Chapter 1 – Introduction",
+  "Chapter 2 – Literature Review": "Chapter 2 – Literature Review",
+  "Chapter 3 – Behavioral Biases in Investing": "Chapter 3 – Behavioral Biases in Investing",
+  "Chapter 4 - Investor Psychology in Action": "Chapter 4 – Investor Psychology in Action",
+  "Chapter 5 – Conclusion": "Chapter 5 – Conclusion",
+};
+
+function tocLabel(block: ArticleBlock, slug: string) {
+  if (block.kind !== "heading" || block.text === "References") return undefined;
+  if (slug === "behavioral-biases-in-investing") return behavioralBiasesTocLabels[block.text];
+  if (block.level !== 1 || (slug === "ai-in-investing" && !/^Chapter \d+:/.test(block.text))) return undefined;
+  return block.text;
+}
 
 export function ResearchArticle({ item, previous, next }: { item: ResearchItem; previous: ArticleNavigation; next: ArticleNavigation }) {
   const article = item.article;
@@ -20,7 +37,10 @@ export function ResearchArticle({ item, previous, next }: { item: ResearchItem; 
   const date = item.publicationDate ?? item.published;
   const blocks = item.blocks;
   const toc = blocks
-    ? blocks.flatMap((block, index) => block.kind === "heading" && block.level === 1 && /^Chapter \d+:/.test(block.text) ? [{ text: block.text, id: `section-${index}-${sectionId(block.text)}`, level: block.level }] : [])
+    ? blocks.flatMap((block, index) => {
+      const text = tocLabel(block, item.slug);
+      return text && block.kind === "heading" ? [{ text, id: `section-${index}-${sectionId(block.text)}`, level: block.level }] : [];
+    })
     : ["Abstract", ...item.sections, ...(article?.footnotes?.length ? ["Footnotes"] : []), ...(article?.references?.length ? ["References"] : [])].map((text) => ({ text, id: sectionId(text), level: 2 }));
 
   return (
@@ -28,7 +48,7 @@ export function ResearchArticle({ item, previous, next }: { item: ResearchItem; 
       <article className="py-14 sm:py-20">
         <header className="max-w-4xl border-b border-line pb-10 sm:pb-12">
           <Link href="/research" className="text-xs font-semibold tracking-[0.14em] text-muted uppercase transition-colors hover:text-accent">Research / {item.type}</Link>
-          <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs font-semibold tracking-[0.12em] uppercase"><span className="text-accent">{item.status}</span><span aria-hidden="true" className="text-line">/</span><span className="text-muted">Publication</span></div>
+          <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs font-semibold tracking-[0.12em] uppercase"><span className="text-accent">{item.slug === "behavioral-biases-in-investing" ? item.type : item.status}</span><span aria-hidden="true" className="text-line">/</span><span className="text-muted">{item.slug === "behavioral-biases-in-investing" ? item.status : "Publication"}</span></div>
           <h1 className="mt-5 font-display text-4xl leading-[1.02] tracking-[-0.045em] sm:text-6xl lg:text-7xl">{item.title}</h1>
           <p className="mt-6 max-w-3xl text-lg leading-8 text-muted sm:text-xl sm:leading-9">{item.subtitle ?? item.description}</p>
           <dl className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted"><div className="flex items-center gap-1.5"><dt className="sr-only">Author</dt><dd>By {author}</dd></div><div aria-hidden="true">•</div><div className="flex items-center gap-1.5"><dt className="sr-only">Publication date</dt><dd><time dateTime={item.slug === "ai-in-investing" ? "2026-07-04" : undefined}>Published {date}</time></dd></div><div aria-hidden="true">•</div><div className="flex items-center gap-1.5"><dt className="sr-only">Reading time</dt><dd>{item.readingTime}</dd></div></dl>
@@ -39,7 +59,7 @@ export function ResearchArticle({ item, previous, next }: { item: ResearchItem; 
         <div className="mt-12 grid gap-12 lg:grid-cols-[12.5rem_minmax(0,46rem)] lg:gap-16">
           <aside className="hidden lg:block"><nav aria-label="Table of contents" className="sticky top-8 max-h-[calc(100vh-4rem)] overflow-y-auto border-l border-line pl-5"><p className="text-xs font-semibold tracking-[0.14em] uppercase">Contents</p><TableOfContents entries={toc} /></nav></aside>
           <div className="min-w-0">
-            {blocks ? <LongformContent blocks={blocks} articleTitle={item.title} /> : <LegacyContent item={item} />}
+            {blocks ? <LongformContent blocks={blocks} articleTitle={item.title} articleSlug={item.slug} /> : <LegacyContent item={item} />}
             <ArticleNavigation previous={previous} next={next} />
           </div>
         </div>
@@ -48,20 +68,19 @@ export function ResearchArticle({ item, previous, next }: { item: ResearchItem; 
   );
 }
 
-function TableOfContents({ entries }: { entries: { text: string; id: string; level: number }[] }) {
-  return <ol className="mt-5 space-y-3">{entries.map((entry, index) => <li className={entry.level > 2 ? "ml-3" : ""} key={entry.id}><a className="text-sm leading-5 text-muted transition-colors hover:text-accent" href={`#${entry.id}`}><span className="mr-2 text-accent">{String(index + 1).padStart(2, "0")}</span>{entry.text}</a></li>)}</ol>;
-}
 
-function LongformContent({ blocks, articleTitle }: { blocks: ArticleBlock[]; articleTitle: string }) {
+
+function LongformContent({ blocks, articleTitle, articleSlug }: { blocks: ArticleBlock[]; articleTitle: string; articleSlug: string }) {
   return <div className="text-[1.05rem] leading-8 text-muted sm:text-lg sm:leading-8">{blocks.map((block, index) => {
     if (shouldHideImportBlock(blocks, index, articleTitle)) return null;
     const visual = visualAfterSection(blocks, index);
-    if (block.kind === "paragraph") return <Fragment key={index}><p className="mt-6 whitespace-pre-line">{block.text}</p>{visual ? <AiInvestingVisual id={visual} /> : null}</Fragment>;
-    if (block.kind === "table") return <Fragment key={index}><SourceTable rows={block.rows} />{visual ? <AiInvestingVisual id={visual} /> : null}</Fragment>;
+    const behavioralVisual = behavioralVisualAfterSection(blocks, index, articleSlug);
+    if (block.kind === "paragraph") return <Fragment key={index}><p className="mt-6 whitespace-pre-line">{block.text}</p>{visual ? <AiInvestingVisual id={visual} /> : null}{behavioralVisual ? <BehavioralBiasesVisual id={behavioralVisual} /> : null}</Fragment>;
+    if (block.kind === "table") return <Fragment key={index}><SourceTable rows={block.rows} />{visual ? <AiInvestingVisual id={visual} /> : null}{behavioralVisual ? <BehavioralBiasesVisual id={behavioralVisual} /> : null}</Fragment>;
     const id = `section-${index}-${sectionId(block.text)}`;
     const headingClasses = block.level === 1 ? "mt-14 font-display text-3xl leading-tight tracking-[-0.035em] text-ink sm:mt-20 sm:text-4xl" : block.level === 2 ? "mt-12 font-display text-2xl leading-tight tracking-[-0.03em] text-ink sm:mt-16 sm:text-3xl" : block.level === 3 ? "mt-10 font-display text-xl leading-tight tracking-[-0.02em] text-ink sm:mt-12 sm:text-2xl" : "mt-8 text-base font-semibold tracking-[-0.01em] text-ink sm:text-lg";
     const Heading = block.level === 1 ? "h2" : block.level === 2 ? "h3" : block.level === 3 ? "h4" : "h5";
-    return <Fragment key={index}><Heading className={`${headingClasses} scroll-mt-8`} id={id}>{block.text}</Heading>{visual ? <AiInvestingVisual id={visual} /> : null}</Fragment>;
+    return <Fragment key={index}><Heading className={`${headingClasses} scroll-mt-8`} id={id}>{block.text}</Heading>{visual ? <AiInvestingVisual id={visual} /> : null}{behavioralVisual ? <BehavioralBiasesVisual id={behavioralVisual} /> : null}</Fragment>;
   })}</div>;
 }
 
@@ -72,6 +91,20 @@ function shouldHideImportBlock(blocks: ArticleBlock[], index: number, articleTit
   if (block.text === articleTitle && !blocks.slice(0, index).some((entry) => entry.kind === "heading" && entry.text === articleTitle)) return true;
   const chapter = [...blocks.slice(0, index)].reverse().find((entry): entry is Extract<ArticleBlock, { kind: "heading" }> => entry.kind === "heading" && entry.level === 1 && /^Chapter \d+:/.test(entry.text));
   return chapter ? chapter.text.replace(/^Chapter \d+:\s*/, "") === block.text : false;
+}
+
+function behavioralVisualAfterSection(blocks: ArticleBlock[], currentIndex: number, articleSlug: string): BehavioralBiasesVisualId | undefined {
+  if (articleSlug !== "behavioral-biases-in-investing") return undefined;
+  for (const visual of behavioralBiasesVisualSections) {
+    const sectionIndex = blocks.findIndex((block) => block.kind === "heading" && block.text === visual.heading);
+    if (sectionIndex === -1 || currentIndex < sectionIndex) continue;
+    const section = blocks[sectionIndex];
+    if (section.kind !== "heading") continue;
+    const nextPeer = blocks.findIndex((block, index) => index > sectionIndex && block.kind === "heading" && block.level <= section.level);
+    const endIndex = nextPeer === -1 ? blocks.length - 1 : nextPeer - 1;
+    if (currentIndex === endIndex) return visual.id;
+  }
+  return undefined;
 }
 
 function visualAfterSection(blocks: ArticleBlock[], currentIndex: number) {
