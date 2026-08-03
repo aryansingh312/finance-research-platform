@@ -14,7 +14,7 @@ const latestResearch = [
     type: "Paper",
     status: "Complete",
     title: "Behavioral Biases in Investing",
-    href: "/research/behavioral-biases-investing",
+    href: "/research/behavioral-biases-in-investing",
     summary: "Why sound analytical processes can still fail under pressure.",
   },
   {

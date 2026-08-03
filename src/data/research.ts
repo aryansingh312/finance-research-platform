@@ -1,10 +1,11 @@
 import { aiInInvestingBlocks, aiInInvestingReadingTime, type ArticleBlock } from "@/data/ai-in-investing";
+import { behavioralBiasesBlocks, behavioralBiasesReadingTime } from "@/data/behavioral-biases";
 
 export type ResearchStatus = "Final Draft" | "Complete" | "In progress";
 
 export type ResearchItem = {
   slug: string;
-  type: "Flagship Project" | "Project" | "Research paper";
+  type: "Flagship Project" | "Project" | "Research paper" | "Research Paper";
   status: ResearchStatus;
   title: string;
   description: string;
@@ -126,16 +127,19 @@ export const researchItems: ResearchItem[] = [
     sections: ["How payment networks work", "The economics of scale", "Regulation and disruption", "A framework for assessing durability"],
   },
   {
-    slug: "behavioral-biases-investing",
-    type: "Research paper",
-    status: "Complete",
+    slug: "behavioral-biases-in-investing",
+    type: "Research Paper",
+    status: "Final Draft",
     title: "Behavioral Biases in Investing",
-    description: "Why sound analytical processes can still fail under pressure.",
+    subtitle: "How Investor Psychology Influences Stock Market Decision-Making",
+    description: "How investor psychology influences stock market decision-making.",
     published: "2026",
-    readingTime: "14 min read",
-    thesis: "An investment process becomes more valuable when it anticipates the predictable ways investors react to uncertainty, loss, and social pressure.",
-    takeaways: ["A written process can reduce the influence of emotion at critical moments.", "Confirmation bias often appears in the questions investors choose not to ask.", "Reviewing decisions separately from outcomes improves learning."],
-    sections: ["The behavioral foundations", "Biases that affect investors", "Process design and decision journals", "Building better feedback loops"],
+    readingTime: behavioralBiasesReadingTime,
+    author: "Aryan Singh",
+    thesis: "To what extent do behavioral biases influence investment decisions and stock market outcomes compared to fundamental analysis?",
+    takeaways: [],
+    sections: [],
+    blocks: behavioralBiasesBlocks,
   },
   {
     slug: "network-effects-billion-dollar-companies",
