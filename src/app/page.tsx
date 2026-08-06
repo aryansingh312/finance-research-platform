@@ -18,11 +18,11 @@ const latestResearch = [
     summary: "Why sound analytical processes can still fail under pressure.",
   },
   {
-    type: "Project",
-    status: "In progress",
+    type: "Flagship Project",
+    status: "Final draft",
     title: "The Evolution of Payment Networks",
-    href: "/research/evolution-payment-networks",
-    summary: "A study of networks, scale, regulation, and economic moats.",
+    href: "/research/payment-networks",
+    summary: "The business models behind Visa and Mastercard's global dominance.",
   },
 ];
 

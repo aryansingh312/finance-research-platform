@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-type VisualId = "ecosystem" | "business-models" | "monetization" | "moats" | "financial-strength" | "risks" | "valuation";
+export type AiInvestingVisualId = "ecosystem" | "business-models" | "monetization" | "moats" | "financial-strength" | "risks" | "valuation";
 
 function Figure({ title, caption, children }: { title: string; caption: string; children: ReactNode }) {
   return <figure className="mt-10 border border-line p-5 sm:p-7"><p className="text-xs font-semibold tracking-[0.14em] uppercase">Analysis visual</p><h3 className="mt-3 font-display text-xl tracking-[-0.02em] text-ink">{title}</h3><div className="mt-7 overflow-x-auto">{children}</div><figcaption className="mt-6 border-t border-line pt-4 text-sm leading-6 text-muted">{caption}<span className="mt-2 block text-xs">Source: Information presented in this article.</span></figcaption></figure>;
@@ -34,7 +34,7 @@ function ComparisonTableVisual({ type }: { type: "financial" | "risks" | "valuat
   return <Figure title={data.title} caption={data.caption}><svg className="h-auto min-w-[44rem] w-full" viewBox={`0 0 760 ${36 + data.rows.length * 48}`} role="img" aria-label={data.title}><rect x="0" y="0" width="760" height="36" fill="var(--accent)" />{data.headers.map((header, index) => <text key={`${type}-header-${header}-${index}`} x={widths.slice(0, index).reduce((sum, width) => sum + width, 14)} y="23" fill="var(--canvas)" fontSize="10" fontWeight="600">{header.toUpperCase()}</text>)}{data.rows.map((row, rowIndex) => { const y = 36 + rowIndex * 48; return <g key={`${type}-row-${row[0]}-${rowIndex}`}><rect x="0" y={y} width="760" height="48" fill={rowIndex % 2 ? "color-mix(in srgb, var(--accent) 4%, transparent)" : "transparent"} />{row.map((cell, index) => <text key={`${type}-cell-${row[0]}-${data.headers[index]}-${index}`} x={widths.slice(0, index).reduce((sum, width) => sum + width, 14)} y={y + 22} fill={index === 0 ? "var(--ink)" : "var(--muted)"} fontSize={index === 0 ? 11 : 10} fontWeight={index === 0 ? "600" : "400"}>{cell}</text>)}</g>; })}</svg></Figure>;
 }
 
-export function AiInvestingVisual({ id }: { id: VisualId }) {
+export function AiInvestingVisual({ id }: { id: AiInvestingVisualId }) {
   if (id === "ecosystem") return <EcosystemVisual />;
   if (id === "business-models") return <BusinessModelsVisual />;
   if (id === "monetization") return <MonetizationVisual />;
@@ -44,7 +44,7 @@ export function AiInvestingVisual({ id }: { id: VisualId }) {
   return <ComparisonTableVisual type="valuation" />;
 }
 
-export const essentialVisualSections: { heading: string; id: VisualId }[] = [
+export const essentialVisualSections: { heading: string; id: AiInvestingVisualId }[] = [
   { heading: "The Current AI Market", id: "ecosystem" },
   { heading: "Business Model Analysis", id: "business-models" },
   { heading: "Software vs Hardware: Two Different Roads", id: "monetization" },

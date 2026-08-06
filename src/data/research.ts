@@ -1,5 +1,7 @@
 import { aiInInvestingBlocks, aiInInvestingReadingTime, type ArticleBlock } from "@/data/ai-in-investing";
+import { competitiveMoatsBlocks, competitiveMoatsReadingTime } from "@/data/competitive-moats";
 import { behavioralBiasesBlocks, behavioralBiasesReadingTime } from "@/data/behavioral-biases";
+import { paymentNetworksBlocks, paymentNetworksReadingTime } from "@/data/payment-networks";
 
 export type ResearchStatus = "Final Draft" | "Complete" | "In progress";
 
@@ -104,27 +106,32 @@ export const researchItems: ResearchItem[] = [
   },
   {
     slug: "competitive-moats-ai-era",
-    type: "Project",
+    type: "Flagship Project",
     status: "Final Draft",
     title: "Competitive Moats in the AI Era",
-    description: "How artificial intelligence is reshaping the durability and sources of competitive advantage.",
+    description: "Why do some companies continue outperforming competitors for decades while others gradually disappear?",
     published: "2026",
-    readingTime: "18 min read",
-    thesis: "AI changes the economics of many industries, but durable advantage still depends on a company's ability to combine technology with distribution, data, trust, and execution.",
-    takeaways: ["AI can erode some switching costs while strengthening others.", "Distribution and proprietary data matter most when models become more accessible.", "Moats should be assessed dynamically rather than treated as permanent labels."],
-    sections: ["A framework for competitive advantage", "How AI changes industry structure", "Data, distribution, and trust", "Questions for long-term investors"],
+    readingTime: competitiveMoatsReadingTime,
+    thesis: "Why do some companies continue outperforming competitors for decades while others gradually disappear?",
+    takeaways: [],
+    sections: [],
+    blocks: competitiveMoatsBlocks,
   },
   {
-    slug: "evolution-payment-networks",
-    type: "Project",
-    status: "In progress",
+    slug: "payment-networks",
+    type: "Flagship Project",
+    status: "Final Draft",
     title: "The Evolution of Payment Networks",
-    description: "A study of networks, scale, regulation, and economic moats in global payments.",
-    published: "In progress",
-    readingTime: "Working draft",
-    thesis: "Payment networks illustrate how scale, trust, regulation, and two-sided network effects can compound into unusually durable business advantages.",
-    takeaways: ["Two-sided networks gain value as both merchant and cardholder acceptance grow.", "Trust and fraud management are core products, not merely operating expenses.", "New payment rails can change the landscape without necessarily displacing established networks."],
-    sections: ["How payment networks work", "The economics of scale", "Regulation and disruption", "A framework for assessing durability"],
+    subtitle: "The Business Models Behind Visa and Mastercard's Global Dominance",
+    description: "An independent analysis of how Visa and Mastercard built dominant global payment networks through network effects, scalable business models, regulation, and durable competitive advantages.",
+    published: "2026",
+    readingTime: paymentNetworksReadingTime,
+    author: "Aryan Singh",
+    pdfUrl: "/Payment-Networks.pdf",
+    thesis: "An independent analysis of how Visa and Mastercard built dominant global payment networks through network effects, scalable business models, regulation, and durable competitive advantages.",
+    takeaways: [],
+    sections: [],
+    blocks: paymentNetworksBlocks,
   },
   {
     slug: "behavioral-biases-in-investing",

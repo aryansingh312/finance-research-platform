@@ -1,8 +1,11 @@
 import { Fragment } from "react";
 import Link from "next/link";
 import type { ArticleBlock } from "@/data/ai-in-investing";
-import { AiInvestingVisual, essentialVisualSections } from "@/components/ai-investing-visuals";
+import { AiInvestingVisual, essentialVisualSections, type AiInvestingVisualId } from "@/components/ai-investing-visuals";
+import { CompetitiveMoatsVisual, competitiveMoatsVisualSections, type CompetitiveMoatsVisualId } from "@/components/competitive-moats-visuals";
 import { BehavioralBiasesVisual, behavioralBiasesVisualSections, type BehavioralBiasesVisualId } from "@/components/behavioral-biases-visuals";
+import { PaymentNetworksVisual, paymentNetworksVisualSections, type PaymentNetworksVisualId } from "@/components/payment-networks-visuals";
+import { ResearchPaperCallout } from "@/components/research-paper-callout";
 import { TableOfContents } from "@/components/table-of-contents";
 import type { ResearchItem } from "@/data/research";
 
@@ -12,9 +15,6 @@ function sectionId(heading: string) {
   return heading.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
-function DownloadIcon() {
-  return <svg aria-hidden="true" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.7" viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v3h16v-3" /></svg>;
-}
 const behavioralBiasesTocLabels: Record<string, string> = {
   "Abstract": "Abstract",
   "Chapter 1 – Introduction": "Chapter 1 – Introduction",
@@ -24,9 +24,21 @@ const behavioralBiasesTocLabels: Record<string, string> = {
   "Chapter 5 – Conclusion": "Chapter 5 – Conclusion",
 };
 
+const paymentNetworksTocLabels: Record<string, string> = {
+  "Chapter 1 - The History of Payment Networks": "Chapter 1 - The History of Payment Networks",
+  "Chapter 2 - How Payment Networks Work": "Chapter 2 - How Payment Networks Work",
+  "Chapter 3 - Visa vs Mastercard vs American Express": "Chapter 3 - Visa vs Mastercard vs American Express",
+  "Chapter 4 - Why Payment Networks Are Incredible": "Chapter 4 - Why Payment Networks Are Incredible",
+  "Chapter 5 - The Future of Payment Networks": "Chapter 5 - The Future of Payment Networks",
+  "Chapter 6 - Risks & Challenges Facing Payment": "Chapter 6 - Risks & Challenges Facing Payment",
+  "Chapter 7 - The Next Generation of Payment Networks": "Chapter 7 - The Next Generation of Payment Networks",
+  "Chapter 8 - Conclusion & Investment Takeaways": "Chapter 8 - Conclusion & Investment Takeaways",
+};
+
 function tocLabel(block: ArticleBlock, slug: string) {
   if (block.kind !== "heading" || block.text === "References") return undefined;
   if (slug === "behavioral-biases-in-investing") return behavioralBiasesTocLabels[block.text];
+  if (slug === "payment-networks") return paymentNetworksTocLabels[block.text];
   if (block.level !== 1 || (slug === "ai-in-investing" && !/^Chapter \d+:/.test(block.text))) return undefined;
   return block.text;
 }
@@ -52,8 +64,9 @@ export function ResearchArticle({ item, previous, next }: { item: ResearchItem; 
           <h1 className="mt-5 font-display text-4xl leading-[1.02] tracking-[-0.045em] sm:text-6xl lg:text-7xl">{item.title}</h1>
           <p className="mt-6 max-w-3xl text-lg leading-8 text-muted sm:text-xl sm:leading-9">{item.subtitle ?? item.description}</p>
           <dl className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted"><div className="flex items-center gap-1.5"><dt className="sr-only">Author</dt><dd>By {author}</dd></div><div aria-hidden="true">•</div><div className="flex items-center gap-1.5"><dt className="sr-only">Publication date</dt><dd><time dateTime={item.slug === "ai-in-investing" ? "2026-07-04" : undefined}>Published {date}</time></dd></div><div aria-hidden="true">•</div><div className="flex items-center gap-1.5"><dt className="sr-only">Reading time</dt><dd>{item.readingTime}</dd></div></dl>
-          <div className="mt-8">{item.pdfUrl ? <a href={item.pdfUrl} download className="inline-flex items-center gap-2 border border-ink px-4 py-2.5 text-sm font-medium transition-colors hover:bg-ink hover:text-canvas"><DownloadIcon />Download PDF</a> : <span className="inline-flex items-center gap-2 border border-line px-4 py-2.5 text-sm text-muted"><DownloadIcon />PDF edition forthcoming</span>}</div>
         </header>
+
+        {item.type === "Flagship Project" ? <ResearchPaperCallout pdfUrl={item.pdfUrl} /> : null}
 
         <details className="mt-8 border-y border-line py-4 lg:hidden"><summary className="cursor-pointer text-xs font-semibold tracking-[0.14em] uppercase">Table of contents</summary><TableOfContents entries={toc} /></details>
         <div className="mt-12 grid gap-12 lg:grid-cols-[12.5rem_minmax(0,46rem)] lg:gap-16">
@@ -68,19 +81,16 @@ export function ResearchArticle({ item, previous, next }: { item: ResearchItem; 
   );
 }
 
-
-
 function LongformContent({ blocks, articleTitle, articleSlug }: { blocks: ArticleBlock[]; articleTitle: string; articleSlug: string }) {
   return <div className="text-[1.05rem] leading-8 text-muted sm:text-lg sm:leading-8">{blocks.map((block, index) => {
     if (shouldHideImportBlock(blocks, index, articleTitle)) return null;
-    const visual = visualAfterSection(blocks, index);
-    const behavioralVisual = behavioralVisualAfterSection(blocks, index, articleSlug);
-    if (block.kind === "paragraph") return <Fragment key={index}><p className="mt-6 whitespace-pre-line">{block.text}</p>{visual ? <AiInvestingVisual id={visual} /> : null}{behavioralVisual ? <BehavioralBiasesVisual id={behavioralVisual} /> : null}</Fragment>;
-    if (block.kind === "table") return <Fragment key={index}><SourceTable rows={block.rows} />{visual ? <AiInvestingVisual id={visual} /> : null}{behavioralVisual ? <BehavioralBiasesVisual id={behavioralVisual} /> : null}</Fragment>;
+    const visuals = visualAfterSection(blocks, index, articleSlug);
+    if (block.kind === "paragraph") return <Fragment key={index}><p className="mt-6 whitespace-pre-line">{block.text}</p><ArticleVisuals articleSlug={articleSlug} visuals={visuals} /></Fragment>;
+    if (block.kind === "table") return <Fragment key={index}><SourceTable rows={block.rows} /><ArticleVisuals articleSlug={articleSlug} visuals={visuals} /></Fragment>;
     const id = `section-${index}-${sectionId(block.text)}`;
     const headingClasses = block.level === 1 ? "mt-14 font-display text-3xl leading-tight tracking-[-0.035em] text-ink sm:mt-20 sm:text-4xl" : block.level === 2 ? "mt-12 font-display text-2xl leading-tight tracking-[-0.03em] text-ink sm:mt-16 sm:text-3xl" : block.level === 3 ? "mt-10 font-display text-xl leading-tight tracking-[-0.02em] text-ink sm:mt-12 sm:text-2xl" : "mt-8 text-base font-semibold tracking-[-0.01em] text-ink sm:text-lg";
     const Heading = block.level === 1 ? "h2" : block.level === 2 ? "h3" : block.level === 3 ? "h4" : "h5";
-    return <Fragment key={index}><Heading className={`${headingClasses} scroll-mt-8`} id={id}>{block.text}</Heading>{visual ? <AiInvestingVisual id={visual} /> : null}{behavioralVisual ? <BehavioralBiasesVisual id={behavioralVisual} /> : null}</Fragment>;
+    return <Fragment key={index}><Heading className={`${headingClasses} scroll-mt-8`} id={id}>{block.text}</Heading><ArticleVisuals articleSlug={articleSlug} visuals={visuals} /></Fragment>;
   })}</div>;
 }
 
@@ -93,31 +103,25 @@ function shouldHideImportBlock(blocks: ArticleBlock[], index: number, articleTit
   return chapter ? chapter.text.replace(/^Chapter \d+:\s*/, "") === block.text : false;
 }
 
-function behavioralVisualAfterSection(blocks: ArticleBlock[], currentIndex: number, articleSlug: string): BehavioralBiasesVisualId | undefined {
-  if (articleSlug !== "behavioral-biases-in-investing") return undefined;
-  for (const visual of behavioralBiasesVisualSections) {
+type VisualDefinition = { heading: string; id: AiInvestingVisualId | CompetitiveMoatsVisualId | BehavioralBiasesVisualId | PaymentNetworksVisualId };
+
+function visualAfterSection(blocks: ArticleBlock[], currentIndex: number, articleSlug: string) {
+  const definitions: VisualDefinition[] = articleSlug === "ai-in-investing" ? essentialVisualSections : articleSlug === "competitive-moats-ai-era" ? competitiveMoatsVisualSections : articleSlug === "behavioral-biases-in-investing" ? behavioralBiasesVisualSections : articleSlug === "payment-networks" ? paymentNetworksVisualSections : [];
+  const visuals: VisualDefinition[] = [];
+  for (const visual of definitions) {
     const sectionIndex = blocks.findIndex((block) => block.kind === "heading" && block.text === visual.heading);
     if (sectionIndex === -1 || currentIndex < sectionIndex) continue;
     const section = blocks[sectionIndex];
     if (section.kind !== "heading") continue;
     const nextPeer = blocks.findIndex((block, index) => index > sectionIndex && block.kind === "heading" && block.level <= section.level);
     const endIndex = nextPeer === -1 ? blocks.length - 1 : nextPeer - 1;
-    if (currentIndex === endIndex) return visual.id;
+    if (currentIndex === endIndex) visuals.push(visual);
   }
-  return undefined;
+  return visuals;
 }
 
-function visualAfterSection(blocks: ArticleBlock[], currentIndex: number) {
-  for (const visual of essentialVisualSections) {
-    const sectionIndex = blocks.findIndex((block) => block.kind === "heading" && block.text === visual.heading);
-    if (sectionIndex === -1 || currentIndex < sectionIndex) continue;
-    const section = blocks[sectionIndex];
-    if (section.kind !== "heading") continue;
-    const nextPeer = blocks.findIndex((block, index) => index > sectionIndex && block.kind === "heading" && block.level <= section.level);
-    const endIndex = nextPeer === -1 ? blocks.length - 1 : nextPeer - 1;
-    if (currentIndex === endIndex) return visual.id;
-  }
-  return undefined;
+function ArticleVisuals({ articleSlug, visuals }: { articleSlug: string; visuals: VisualDefinition[] }) {
+  return <>{visuals.map((visual, index) => articleSlug === "ai-in-investing" ? <AiInvestingVisual id={visual.id as AiInvestingVisualId} key={`ai-${visual.id}-${index}`} /> : articleSlug === "competitive-moats-ai-era" ? <CompetitiveMoatsVisual id={visual.id as CompetitiveMoatsVisualId} key={`moats-${visual.id}-${index}`} /> : articleSlug === "payment-networks" ? <PaymentNetworksVisual id={visual.id as PaymentNetworksVisualId} key={`payments-${visual.id}-${index}`} /> : <BehavioralBiasesVisual id={visual.id as BehavioralBiasesVisualId} key={`behavioral-${visual.id}-${index}`} />)}</>;
 }
 
 function SourceTable({ rows }: { rows: string[][] }) {
