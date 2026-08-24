@@ -1,6 +1,5 @@
-import { notFound } from "next/navigation";
-import { companies, getCompany } from "@/data/library";
+import { redirect } from "next/navigation";
 
-export function generateStaticParams() { return companies.map((company) => ({ slug: company.slug })); }
-
-export default async function CompanyPage({ params }: { params: Promise<{ slug: string }> }) { const { slug } = await params; const company = getCompany(slug); if (!company) notFound(); const sections = [["Business model analysis", company.businessModel], ["Financial analysis", company.financialAnalysis], ["Investment thesis", company.investmentThesis]]; return <main className="mx-auto max-w-6xl px-6 sm:px-10"><article className="max-w-3xl py-16 sm:py-24"><p className="text-xs font-semibold tracking-[0.14em] text-accent uppercase">Company research / {company.sector}</p><h1 className="mt-4 font-display text-5xl tracking-[-0.04em] sm:text-7xl">{company.name}</h1><p className="mt-6 max-w-2xl text-lg leading-8 text-muted">A structured research profile designed to make the analytical process transparent and repeatable.</p><div className="mt-12 space-y-10">{sections.map(([title, copy]) => <section key={title} className="border-t border-line pt-7"><h2 className="text-xs font-semibold tracking-[0.14em] uppercase">{title}</h2><p className="mt-4 text-base leading-7 text-muted">{copy}</p></section>)}</div><p className="mt-12 border-l-2 border-accent pl-5 text-sm leading-6 text-muted">This profile is a research overview for educational purposes, not investment advice.</p></article></main>; }
+export default async function LegacyCompanyPage({ params }: { params: Promise<{ slug: string }> }) {
+  redirect(`/companies/${(await params).slug}`);
+}
