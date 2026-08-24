@@ -5,7 +5,7 @@ import { researchItems } from "@/data/research";
 
 const entries: SearchEntry[] = [
   ...researchItems.map((item) => ({ title: item.title, description: item.description, href: `/research/${item.slug}`, category: item.type })),
-  ...companies.map((company) => ({ title: company.name, description: company.businessModel, href: `/library/companies/${company.slug}`, category: "Company research" })),
+  ...companies.map((company) => ({ title: company.name, description: `${company.sector} equity research report`, href: `/companies/${company.slug}`, category: "Company research" })),
   ...knowledgeTopics.map((topic) => ({ title: topic, description: "Finance knowledge-base topic", href: "/library/knowledge", category: "Knowledge base" })),
   ...frameworks.map((framework) => ({ title: framework, description: "Investment framework", href: "/library/frameworks", category: "Framework" })),
 ];

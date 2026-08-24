@@ -9,6 +9,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...staticPages.map((path) => ({ url: `${baseUrl}${path}`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: path === "" ? 1 : 0.7 })),
     ...researchItems.map((item) => ({ url: `${baseUrl}/research/${item.slug}`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 })),
-    ...companies.map((company) => ({ url: `${baseUrl}/library/companies/${company.slug}`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.6 })),
+    ...companies.map((company) => ({ url: `${baseUrl}/companies/${company.slug}`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.6 })),
   ];
 }
