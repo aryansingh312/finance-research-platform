@@ -1,9 +1,13 @@
 import type { ResearchStatus } from "@/data/library";
+import { frameworkReadingTime } from "./framework-reading-time";
+import batch from "./framework-batch.json";
 
 export type FrameworkTable = { caption?: string; headers: string[]; rows: string[][] };
 export type FrameworkDiagram = { title: string; caption: string; kind: "flow" | "grid"; nodes: { id: string; label: string }[]; links: { from: string; to: string }[] };
 export type FrameworkList = { title?: string; items: string[] };
-export type FrameworkSection = { id: string; title: string; paragraphs?: string[]; lists?: FrameworkList[]; table?: FrameworkTable; diagram?: FrameworkDiagram; callout?: { label: string; text: string } };
+export type FrameworkVisual = { title: string; caption: string; kind: "sequence" | "cycle" | "matrix" | "pyramid" | "decision" | "triangle"; nodes: { id: string; label: string; outcome?: string }[]; branchLabel?: string; continuation?: string; finalOutcome?: string };
+export type FrameworkBlock = { type: "paragraph" | "heading"; text: string } | { type: "list"; items: string[] } | { type: "table"; table: FrameworkTable } | { type: "diagram"; diagram: FrameworkVisual };
+export type FrameworkSection = { id: string; title: string; paragraphs?: string[]; lists?: FrameworkList[]; table?: FrameworkTable; diagram?: FrameworkDiagram; callout?: { label: string; text: string }; content?: FrameworkBlock[] };
 export type Framework = { slug: string; title: string; category: string; status: ResearchStatus; readingTime: string; purpose: string; overview: { designedToAnswer: string; whenToUse: string; whenNotToUse: string }; sections: FrameworkSection[]; pdfUrl?: string; relatedSlugs?: string[] };
 
 const businessQualitySections: FrameworkSection[] = [
@@ -30,4 +34,9 @@ const businessQualitySections: FrameworkSection[] = [
 
 const businessQualityWords = businessQualitySections.flatMap((section) => [section.title, ...(section.paragraphs ?? []), ...(section.lists ?? []).flatMap((list) => [list.title ?? "", ...list.items]), section.callout?.text ?? "", ...(section.table?.rows.flat() ?? [])]).join(" ").trim().split(/\s+/).filter(Boolean).length;
 export const frameworks: Framework[] = [{ slug: "business-quality-framework", title: "Business Quality Framework", category: "Business Quality", status: "Complete", readingTime: `${Math.ceil(businessQualityWords / 220)} min read`, purpose: "A reusable system for evaluating whether a company is structurally capable of creating value over long periods.", overview: { designedToAnswer: "Whether the underlying company is structurally capable of creating value over long periods.", whenToUse: "When assessing business quality before separating that assessment from valuation and investment attractiveness.", whenNotToUse: "As a valuation model, purchase-timing tool, or replacement for written judgment." }, sections: businessQualitySections }];
+// The previously published Business Quality record and reading time remain unchanged.
+for (const entry of batch) {
+  const framework = entry as Omit<Framework, "readingTime">;
+  frameworks.push({ ...framework, readingTime: frameworkReadingTime(framework) });
+}
 export function getFramework(slug: string) { return frameworks.find((framework) => framework.slug === slug); }
