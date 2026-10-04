@@ -2,6 +2,7 @@ import { aiInInvestingBlocks, aiInInvestingReadingTime, type ArticleBlock } from
 import { competitiveMoatsBlocks, competitiveMoatsReadingTime } from "@/data/competitive-moats";
 import { behavioralBiasesBlocks, behavioralBiasesReadingTime } from "@/data/behavioral-biases";
 import { paymentNetworksBlocks, paymentNetworksReadingTime } from "@/data/payment-networks";
+import { networkEffectsBlocks, networkEffectsReadingTime } from "@/data/network-effects-paper";
 
 export type ResearchStatus = "Final Draft" | "Complete" | "In progress";
 
@@ -149,16 +150,18 @@ export const researchItems: ResearchItem[] = [
     blocks: behavioralBiasesBlocks,
   },
   {
-    slug: "network-effects-billion-dollar-companies",
-    type: "Research paper",
-    status: "In progress",
+    slug: "how-network-effects-create-billion-dollar-companies",
+    type: "Research Paper",
+    status: "Complete",
     title: "How Network Effects Create Billion-Dollar Companies",
-    description: "An examination of how participation, liquidity, and trust compound into scalable business value.",
-    published: "In progress",
-    readingTime: "Proposal and literature review complete",
-    thesis: "Network effects can create exceptional economic value when increased participation makes a product meaningfully more useful, rather than merely more visible.",
-    takeaways: ["Not every fast-growing platform has a true network effect.", "Liquidity is often the critical mechanism in marketplace businesses.", "Network effects need reinforcement through product quality, incentives, and trust."],
-    sections: ["Defining network effects", "Types of network effects", "The role of liquidity and trust", "Research in progress"],
+    description: "A qualitative study of how network effects reinforce competitive advantage across six company case studies—and why participation alone is not enough.",
+    published: "Date pending",
+    readingTime: networkEffectsReadingTime,
+    author: "Aryan Singh",
+    thesis: "To what extent do network effects create sustainable competitive advantages and superior long-term shareholder returns in modern businesses?",
+    takeaways: [],
+    sections: [],
+    blocks: networkEffectsBlocks,
   },
 ];
 

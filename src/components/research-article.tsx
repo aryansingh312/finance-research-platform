@@ -5,6 +5,7 @@ import { AiInvestingVisual, essentialVisualSections, type AiInvestingVisualId } 
 import { CompetitiveMoatsVisual, competitiveMoatsVisualSections, type CompetitiveMoatsVisualId } from "@/components/competitive-moats-visuals";
 import { BehavioralBiasesVisual, behavioralBiasesVisualSections, type BehavioralBiasesVisualId } from "@/components/behavioral-biases-visuals";
 import { PaymentNetworksVisual, paymentNetworksVisualSections, type PaymentNetworksVisualId } from "@/components/payment-networks-visuals";
+import { NetworkEffectsVisual, networkEffectsVisualSections, type NetworkEffectsVisualId } from "@/components/network-effects-paper-visuals";
 import { ResearchPaperCallout } from "@/components/research-paper-callout";
 import { TableOfContents } from "@/components/table-of-contents";
 import type { ResearchItem } from "@/data/research";
@@ -37,6 +38,7 @@ const paymentNetworksTocLabels: Record<string, string> = {
 
 function tocLabel(block: ArticleBlock, slug: string) {
   if (block.kind !== "heading" || block.text === "References") return undefined;
+  if (slug === "how-network-effects-create-billion-dollar-companies") return block.level === 1 ? block.text : undefined;
   if (slug === "behavioral-biases-in-investing") return behavioralBiasesTocLabels[block.text];
   if (slug === "payment-networks") return paymentNetworksTocLabels[block.text];
   if (block.level !== 1 || (slug === "ai-in-investing" && !/^Chapter \d+:/.test(block.text))) return undefined;
@@ -63,7 +65,7 @@ export function ResearchArticle({ item, previous, next }: { item: ResearchItem; 
           <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs font-semibold tracking-[0.12em] uppercase"><span className="text-accent">{item.slug === "behavioral-biases-in-investing" ? item.type : item.status}</span><span aria-hidden="true" className="text-line">/</span><span className="text-muted">{item.slug === "behavioral-biases-in-investing" ? item.status : "Publication"}</span></div>
           <h1 className="mt-5 font-display text-4xl leading-[1.02] tracking-[-0.045em] sm:text-6xl lg:text-7xl">{item.title}</h1>
           <p className="mt-6 max-w-3xl text-lg leading-8 text-muted sm:text-xl sm:leading-9">{item.subtitle ?? item.description}</p>
-          <dl className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted"><div className="flex items-center gap-1.5"><dt className="sr-only">Author</dt><dd>By {author}</dd></div><div aria-hidden="true">•</div><div className="flex items-center gap-1.5"><dt className="sr-only">Publication date</dt><dd><time dateTime={item.slug === "ai-in-investing" ? "2026-07-04" : undefined}>Published {date}</time></dd></div><div aria-hidden="true">•</div><div className="flex items-center gap-1.5"><dt className="sr-only">Reading time</dt><dd>{item.readingTime}</dd></div></dl>
+          <dl className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted"><div className="flex items-center gap-1.5"><dt className="sr-only">Author</dt><dd>By {author}</dd></div><div aria-hidden="true">•</div><div className="flex items-center gap-1.5"><dt className="sr-only">Publication date</dt><dd>{date === "Date pending" ? "Date pending" : <time dateTime={item.slug === "ai-in-investing" ? "2026-07-04" : undefined}>Published {date}</time>}</dd></div><div aria-hidden="true">•</div><div className="flex items-center gap-1.5"><dt className="sr-only">Reading time</dt><dd>{item.readingTime}</dd></div></dl>
         </header>
 
         {item.type === "Flagship Project" ? <ResearchPaperCallout pdfUrl={item.pdfUrl} /> : null}
@@ -103,10 +105,10 @@ function shouldHideImportBlock(blocks: ArticleBlock[], index: number, articleTit
   return chapter ? chapter.text.replace(/^Chapter \d+:\s*/, "") === block.text : false;
 }
 
-type VisualDefinition = { heading: string; id: AiInvestingVisualId | CompetitiveMoatsVisualId | BehavioralBiasesVisualId | PaymentNetworksVisualId };
+type VisualDefinition = { heading: string; id: AiInvestingVisualId | CompetitiveMoatsVisualId | BehavioralBiasesVisualId | PaymentNetworksVisualId | NetworkEffectsVisualId };
 
 function visualAfterSection(blocks: ArticleBlock[], currentIndex: number, articleSlug: string) {
-  const definitions: VisualDefinition[] = articleSlug === "ai-in-investing" ? essentialVisualSections : articleSlug === "competitive-moats-ai-era" ? competitiveMoatsVisualSections : articleSlug === "behavioral-biases-in-investing" ? behavioralBiasesVisualSections : articleSlug === "payment-networks" ? paymentNetworksVisualSections : [];
+  const definitions: VisualDefinition[] = articleSlug === "ai-in-investing" ? essentialVisualSections : articleSlug === "competitive-moats-ai-era" ? competitiveMoatsVisualSections : articleSlug === "behavioral-biases-in-investing" ? behavioralBiasesVisualSections : articleSlug === "payment-networks" ? paymentNetworksVisualSections : articleSlug === "how-network-effects-create-billion-dollar-companies" ? networkEffectsVisualSections : [];
   const visuals: VisualDefinition[] = [];
   for (const visual of definitions) {
     const sectionIndex = blocks.findIndex((block) => block.kind === "heading" && block.text === visual.heading);
@@ -121,7 +123,7 @@ function visualAfterSection(blocks: ArticleBlock[], currentIndex: number, articl
 }
 
 function ArticleVisuals({ articleSlug, visuals }: { articleSlug: string; visuals: VisualDefinition[] }) {
-  return <>{visuals.map((visual, index) => articleSlug === "ai-in-investing" ? <AiInvestingVisual id={visual.id as AiInvestingVisualId} key={`ai-${visual.id}-${index}`} /> : articleSlug === "competitive-moats-ai-era" ? <CompetitiveMoatsVisual id={visual.id as CompetitiveMoatsVisualId} key={`moats-${visual.id}-${index}`} /> : articleSlug === "payment-networks" ? <PaymentNetworksVisual id={visual.id as PaymentNetworksVisualId} key={`payments-${visual.id}-${index}`} /> : <BehavioralBiasesVisual id={visual.id as BehavioralBiasesVisualId} key={`behavioral-${visual.id}-${index}`} />)}</>;
+  return <>{visuals.map((visual, index) => articleSlug === "ai-in-investing" ? <AiInvestingVisual id={visual.id as AiInvestingVisualId} key={`ai-${visual.id}-${index}`} /> : articleSlug === "competitive-moats-ai-era" ? <CompetitiveMoatsVisual id={visual.id as CompetitiveMoatsVisualId} key={`moats-${visual.id}-${index}`} /> : articleSlug === "payment-networks" ? <PaymentNetworksVisual id={visual.id as PaymentNetworksVisualId} key={`payments-${visual.id}-${index}`} /> : articleSlug === "how-network-effects-create-billion-dollar-companies" ? <NetworkEffectsVisual id={visual.id as NetworkEffectsVisualId} key={`network-${visual.id}-${index}`} /> : <BehavioralBiasesVisual id={visual.id as BehavioralBiasesVisualId} key={`behavioral-${visual.id}-${index}`} />)}</>;
 }
 
 function SourceTable({ rows }: { rows: string[][] }) {
