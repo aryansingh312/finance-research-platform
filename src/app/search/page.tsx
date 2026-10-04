@@ -1,13 +1,14 @@
 import { PageIntro } from "@/components/page-intro";
 import { SearchExplorer, type SearchEntry } from "@/components/search-explorer";
-import { companies, knowledgeTopics } from "@/data/library";
+import { companies } from "@/data/library";
+import { knowledgeArticles } from "@/data/knowledge";
 import { frameworks } from "@/data/frameworks";
 import { researchItems } from "@/data/research";
 
 const entries: SearchEntry[] = [
   ...researchItems.map((item) => ({ title: item.title, description: item.description, href: `/research/${item.slug}`, category: item.type })),
   ...companies.map((company) => ({ title: company.name, description: `${company.sector} equity research report`, href: `/companies/${company.slug}`, category: "Company research" })),
-  ...knowledgeTopics.map((topic) => ({ title: topic, description: "Finance knowledge-base topic", href: "/library/knowledge", category: "Knowledge base" })),
+  ...knowledgeArticles.map((article) => ({ title: article.title, description: article.purpose, href: `/library/knowledge/${article.slug}`, category: article.category })),
   ...frameworks.map((framework) => ({ title: framework.title, description: framework.purpose, href: `/library/frameworks/${framework.slug}`, category: framework.category })),
 ];
 
