@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { companies } from "@/data/library";
 import { frameworks } from "@/data/frameworks";
+import { knowledgeArticles } from "@/data/knowledge";
 import { researchItems } from "@/data/research";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -12,5 +13,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...researchItems.map((item) => ({ url: `${baseUrl}/research/${item.slug}`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.8 })),
     ...companies.map((company) => ({ url: `${baseUrl}/companies/${company.slug}`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.6 })),
     ...frameworks.map((framework) => ({ url: `${baseUrl}/library/frameworks/${framework.slug}`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.6 })),
+    ...knowledgeArticles.map((article) => ({ url: `${baseUrl}/library/knowledge/${article.slug}`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.6 })),
   ];
 }
